@@ -6,8 +6,6 @@
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <chrono>
 #include <universal/utility/directives.hpp>
-#include <universal/functions/isrepresentable.hpp>
-
 #include <universal/native/ieee754.hpp>
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
@@ -204,7 +202,7 @@ void FrankMatrix() {
 }
 
 template<typename Scalar>
-void MagicSquareTest(int N) {
+void MagicSquareTest(unsigned N) {
 	using std::abs;
 	using namespace sw::universal::blas;
 	using Vector = sw::universal::blas::vector<Scalar>;

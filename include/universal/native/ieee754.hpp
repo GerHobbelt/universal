@@ -22,17 +22,11 @@
 #include <universal/native/ieee754_decoder.hpp>
 #include <universal/native/ieee754_type_tag.hpp>
 
-////////////////////////////////////////////////////////////////////////////////////////
-// enable throwing specific exceptions long double special handling of 128bit fields
-#if !defined(BITBLOCK_THROW_ARITHMETIC_EXCEPTION)
-// default is to use std::cerr for signalling an error
-#define BITBLOCK_THROW_ARITHMETIC_EXCEPTION 0
-#endif
-
 // if the compiler environment allows, set up
 // constexpr compatible bit casts, otherwise
 // fallback to nonconstexpr bit casts.
 #include <universal/native/extract_fields.hpp>
+#include <universal/native/set_fields.hpp>
 
 // functions that do not need to be constexpr
 #include <universal/native/nonconst_bitcast.hpp>

@@ -25,7 +25,7 @@ if(NOT DEFINED UNIVERSAL_VERSION_MAJOR)
   set(UNIVERSAL_VERSION_MAJOR 3)
 endif()
 if(NOT DEFINED UNIVERSAL_VERSION_MINOR)
-  set(UNIVERSAL_VERSION_MINOR 77)
+  set(UNIVERSAL_VERSION_MINOR 80)
 endif()
 if(NOT DEFINED UNIVERSAL_VERSION_PATCH)
   set(UNIVERSAL_VERSION_PATCH 1)
@@ -89,6 +89,7 @@ option(BUILD_NUMBERS                     "Set to ON to build all the number syst
 option(BUILD_NUMERICS                    "Set to ON to build all the numeric components"       OFF)
 option(BUILD_BENCHMARKS                  "Set to ON to build all the benchmark components"     OFF)
 option(BUILD_MIXEDPRECISION_SDK          "Set to ON to build the mixed-precision SDK"          OFF)
+option(BUILD_COMPLEX                     "Set to ON to build complex support components"       OFF)
 
 # or, build individual components
 # utilities and educational examples
@@ -130,6 +131,8 @@ option(BUILD_NUMBER_FIXPNTS              "Set to ON to build static fixed-point 
 option(BUILD_NUMBER_BFLOATS              "Set to ON to build static bfloat tests"              OFF)
 option(BUILD_NUMBER_CFLOATS              "Set to ON to build static cfloat tests"              OFF)
 option(BUILD_NUMBER_DFLOATS              "Set to ON to build static dfloat tests"              OFF)
+option(BUILD_NUMBER_DOUBLE_DOUBLE        "Set to ON to build static double-double tests"       OFF)
+option(BUILD_NUMBER_QUAD_DOUBLE          "Set to ON to build static quad-double tests"         OFF)
 option(BUILD_NUMBER_AREALS               "Set to ON to build static areal tests"               OFF)
 option(BUILD_NUMBER_UNUM1S               "Set to ON to build static unum type 1 tests"         OFF)
 option(BUILD_NUMBER_UNUM2S               "Set to ON to build static unum type 2 tests"         OFF)
@@ -449,7 +452,7 @@ macro (compile_all testing prefix folder)
         get_filename_component (test ${source} NAME_WE)
         string(REPLACE " " ";" new_source ${source})
         set(test_name ${prefix}_${test})
-        message(STATUS "Add test ${test_name} from source ${new_source}.")
+        #message(STATUS "Add test ${test_name} from source ${new_source}.")
         add_executable (${test_name} ${new_source})
 
         #add_custom_target(valid SOURCES ${SOURCES})
@@ -604,6 +607,8 @@ if(BUILD_ALL)
 	set(BUILD_NUMBERS ON)
 	set(BUILD_MIXEDPRECISION_SDK ON)
 	set(BUILD_APP_ENVIRONMENT ON)
+# for the moment, explicitely turn COMPLEX off until we have a standalone complex<> solution
+	set(BUILD_COMPLEX OFF)
 
 	# build the BLAS test/verification suites
 	set(BUILD_LINEAR_ALGEBRA_BLAS ON)
@@ -618,13 +623,16 @@ if(BUILD_ALL)
 	set(BUILD_VALIDATION_HW ON)
 endif(BUILD_ALL)
 
-# set the grouped components to build (will trigger builds when tested)
+# set the grouped components to build Continuous Integration regression suite
+# we are disabling COMPLEX because we need a solution to the 
+# disappearing support of complex<> for user-defined types
 if(BUILD_CI)
 	set(BUILD_NUMBERS ON)
 	set(BUILD_DEMONSTRATION OFF)
 	set(BUILD_NUMERICS OFF)
 	set(BUILD_MIXEDPRECISION_SDK OFF)
 	set(BUILD_APP_ENVIRONMENT ON)
+	set(BUILD_COMPLEX OFF)
 endif(BUILD_CI)
 
 # core demonstration example applications that use the library
@@ -634,6 +642,21 @@ if(BUILD_DEMONSTRATION)
 	set(BUILD_CMD_LINE_TOOLS ON)
 	set(BUILD_PLAYGROUND ON)
 endif(BUILD_DEMONSTRATION)
+
+# enable complex environment components
+if(BUILD_COMPLEX)
+# right now, the complex arithmetic and math functions (imag, real, conj)
+# are maintained in the individual number system regression suites.
+# Their respective build systems will use BUILD_COMPLEX to add/remove
+# the complex<> regression suites.
+	set(BUILD_APPLICATIONS ON)
+	set(BUILD_NUMBER_FIXPNTS ON)
+	set(BUILD_NUMBER_CFLOATS ON)
+	set(BUILD_NUMBER_POSITS ON)
+# I am leaving this segment here as a pattern that might drive the development
+# of a complex<> replacement that might need its own regression suite 
+# independent of user-defined types.
+endif(BUILD_COMPLEX)
 
 if(BUILD_NUMBERS)
 	# build the different test/verification suites for each number system
@@ -660,6 +683,8 @@ if(BUILD_NUMBER_STATICS)
 	set(BUILD_NUMBER_BFLOATS ON)
 	set(BUILD_NUMBER_CFLOATS ON)
 	set(BUILD_NUMBER_DFLOATS ON)
+	set(BUILD_NUMBER_DOUBLE_DOUBLE ON)
+	set(BUILD_NUMBER_QUAD_DOUBLE ON)
 	set(BUILD_NUMBER_AREALS ON)
 	set(BUILD_NUMBER_UNUM1S ON)
 	set(BUILD_NUMBER_UNUM2S ON)
@@ -822,6 +847,16 @@ if(BUILD_NUMBER_DFLOATS)
 add_subdirectory("static/dfloat")
 endif(BUILD_NUMBER_DFLOATS)
 
+# double-double floats
+if(BUILD_NUMBER_DOUBLE_DOUBLE)
+add_subdirectory("static/dd")
+endif(BUILD_NUMBER_DOUBLE_DOUBLE)
+
+# quad-double floats
+if(BUILD_NUMBER_QUAD_DOUBLE)
+add_subdirectory("static/qd")
+endif(BUILD_NUMBER_QUAD_DOUBLE)
+
 # conversion tests suites
 if(BUILD_NUMBER_CONVERSIONS)
 add_subdirectory("static/conversions")
@@ -925,6 +960,7 @@ add_subdirectory("applications/accuracy/optimization")
 add_subdirectory("applications/accuracy/pde")
 add_subdirectory("applications/accuracy/roots")
 add_subdirectory("applications/accuracy/science")
+add_subdirectory("applications/accuracy/mathematics")
 
 add_subdirectory("applications/approximation/taylor")
 add_subdirectory("applications/approximation/chebyshev")

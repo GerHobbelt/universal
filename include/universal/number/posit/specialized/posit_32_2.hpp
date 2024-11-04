@@ -20,8 +20,8 @@ namespace sw { namespace universal {
 #if POSIT_FAST_POSIT_32_2
 #ifdef _MSC_VER
 #pragma message("Fast specialization of posit<32,2>")
-//#else
-//#warning("Fast specialization of posit<32,2>")
+#else
+#pragma message "Fast specialization of posit<32,2>"
 #endif
 
 // fast specialized posit<32,2>
@@ -907,9 +907,9 @@ private:
 			std::cout << "reglen         = " << reglen << std::endl;
 			std::cout << "regime         = " << to_binary(regime) << std::endl;
 			std::cout << "exponent       = " << exp << std::endl;
-			std::cout << "fraction raw   = " << to_binary(frac64, 64, true) << std::endl;
-			std::cout << "fraction final = " << to_binary(fraction, 32, true) << std::endl;
-			std::cout << "posit bits     = " << to_binary(bits, 32, true) << std::endl;
+			std::cout << "fraction raw   = " << to_binary(frac64, true, 64) << std::endl;
+			std::cout << "fraction final = " << to_binary(fraction, true, 32) << std::endl;
+			std::cout << "posit bits     = " << to_binary(bits, true, 32) << std::endl;
 #endif
 		}
 		return bits;

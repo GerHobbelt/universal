@@ -116,9 +116,9 @@ public:
 	static constexpr unsigned  MSU = nrBlocks - 1;
 	static constexpr bt        MSU_MASK = bt(bt(~0) >> (nrBlocks * bitsInBlock - nbits));
 
-	constexpr fixpnt() noexcept : _block(0) {}
-
-	constexpr fixpnt(const fixpnt&) noexcept = default;
+	// constructors
+	fixpnt() noexcept = default;
+	fixpnt(const fixpnt&) noexcept = default;
 	fixpnt(fixpnt&&) noexcept = default;
 
 	constexpr fixpnt& operator=(const fixpnt&) noexcept = default;
@@ -211,18 +211,18 @@ public:
 	}
 
 	// initializers for native types
-	constexpr fixpnt(signed char initial_value)        noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(short initial_value)              noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(int initial_value)                noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(long initial_value)               noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(long long initial_value)          noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(char initial_value)               noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(unsigned short initial_value)     noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(unsigned int initial_value)       noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(unsigned long initial_value)      noexcept : fixpnt{convert(initial_value)} {}
-	constexpr fixpnt(unsigned long long initial_value) noexcept : fixpnt{convert(initial_value)} {}
-	CONSTEXPRESSION fixpnt(float initial_value)        noexcept : fixpnt{convert(initial_value)} {}
-	CONSTEXPRESSION fixpnt(double initial_value)       noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(signed char initial_value)         noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(short initial_value)               noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(int initial_value)                 noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(long initial_value)                noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(long long initial_value)           noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(char initial_value)                noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(unsigned short initial_value)      noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(unsigned int initial_value)        noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(unsigned long initial_value)       noexcept : fixpnt{convert(initial_value)} {}
+	constexpr fixpnt(unsigned long long initial_value)  noexcept : fixpnt{convert(initial_value)} {}
+	BIT_CAST_CONSTEXPR fixpnt(float initial_value)      noexcept : fixpnt{convert(initial_value)} {}
+	BIT_CAST_CONSTEXPR fixpnt(double initial_value)     noexcept : fixpnt{convert(initial_value)} {}
 
 	// access operator for bits
 	// this needs a proxy to be able to create l-values
@@ -241,14 +241,14 @@ public:
 	constexpr fixpnt& operator=(unsigned int rhs)       noexcept { return *this = convert(rhs); }
 	constexpr fixpnt& operator=(unsigned long rhs)      noexcept { return *this = convert(rhs); }
 	constexpr fixpnt& operator=(unsigned long long rhs) noexcept { return *this = convert(rhs); }
-	CONSTEXPRESSION fixpnt& operator=(float rhs)        noexcept { return *this = convert(rhs); }
-	CONSTEXPRESSION fixpnt& operator=(double rhs)       noexcept { return *this = convert(rhs); }
+	BIT_CAST_CONSTEXPR fixpnt& operator=(float rhs)     noexcept { return *this = convert(rhs); }
+	BIT_CAST_CONSTEXPR fixpnt& operator=(double rhs)    noexcept { return *this = convert(rhs); }
 
 	// guard long double support to enable ARM and RISC-V embedded environments
 #if LONG_DOUBLE_SUPPORT
-	CONSTEXPRESSION fixpnt(long double initial_value)   noexcept : fixpnt{ convert(initial_value) } {}
-	CONSTEXPRESSION fixpnt& operator=(long double rhs)  noexcept { return convert(rhs);  }
-	CONSTEXPRESSION explicit operator long double() const noexcept { return to_native<long double>(); }
+	fixpnt(long double initial_value)                   noexcept : fixpnt{ convert(initial_value) } {}
+	fixpnt& operator=(long double rhs)                  noexcept { return *this = convert(rhs);  }
+	explicit operator long double()               const noexcept { return to_native<long double>(); }
 #endif
 
 	// assign the value of the textual representation to the fixpnt: can be binary/octal/decimal/hexadecimal
@@ -703,10 +703,12 @@ protected:
 			uint64_t bits{ 0 };
 			extractFields(v, s, unbiasedExponent, fraction, bits); // use native conversion
 			if (unbiasedExponent > 0) fraction |= (1ull << ieee754_parameter<Arith>::fbits);
-			int radixPoint = ieee754_parameter<Arith>::fbits - (static_cast<int>(unbiasedExponent) - ieee754_parameter<Arith>::bias);
+			int biasedExponent = static_cast<int>(unbiasedExponent) - ieee754_parameter<Arith>::bias;
+			int radixPoint = ieee754_parameter<Arith>::fbits - biasedExponent;
 
 			// our fixed-point has its radixPoint at rbits
-			int shiftRight = radixPoint - int(rbits);
+			int shiftRight = std::min(radixPoint - int(rbits), 64);
+			if (shiftRight > (ieee754_parameter<Arith>::fbits + 1)) return f; // return zero
 			if (shiftRight > 0) {
 				// we need to round the raw bits
 				// collect guard, round, and sticky bits
@@ -1974,7 +1976,7 @@ inline std::ostream& operator<<(std::ostream& ostr, const fixpnt<nbits, rbits, a
 	std::ios_base::fmtflags ff;
 	ff = ostr.flags();
 	ss.flags(ff);
-	ss << std::setw(width) << std::setprecision(prec) << convert_to_decimal_string(i) << ' ';
+	ss << std::setw(width) << std::setprecision(prec) << convert_to_decimal_string(i);
 
 	return ostr << ss.str();
 }

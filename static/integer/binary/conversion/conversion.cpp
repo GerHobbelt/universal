@@ -1,6 +1,7 @@
 //  conversion.cpp : test suite runner for conversion of abitrary fixed precision integers
 //
-// Copyright (C) 2017-2022 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// SPDX-License-Identifier: MIT
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <universal/utility/directives.hpp>
@@ -11,9 +12,6 @@
 // however, we also need to make this work with exceptions turned off: TODO
 #define INTEGER_THROW_ARITHMETIC_EXCEPTION 1
 #include <universal/number/integer/integer.hpp>
-#include <universal/number/integer/numeric_limits.hpp>
-// is representable
-#include <universal/functions/isrepresentable.hpp>
 #include <universal/verification/integer_test_suite.hpp>
 
 #include <universal/native/integers.hpp>
@@ -40,19 +38,19 @@ int VerifyToIntegerConversion(bool reportTestCases) {
 	uint16_t ua16 = uint16_t(a);
 	uint32_t ua32 = uint32_t(a);
 	uint64_t ua64 = uint64_t(a);
-	std::cout << "ua8   : " << to_binary(ua8, sizeof(ua8) * 8, true) << std::setw(95) << (long long)(ua8) << '\n';
-	std::cout << "ua16  : " << to_binary(ua16, sizeof(ua16) * 8, true) << std::setw(85) << (long long)(ua16) << '\n';
-	std::cout << "ua32  : " << to_binary(ua32, sizeof(ua32) * 8, true) << std::setw(65) << (long long)(ua32) << '\n';
-	std::cout << "ua64  : " << to_binary(ua64, sizeof(ua64) * 8, true) << std::setw(25) << (long long)(ua64) << '\n';
+	std::cout << "ua8   : " << to_binary(ua8, true, sizeof(ua8) * 8) << std::setw(95) << (long long)(ua8) << '\n';
+	std::cout << "ua16  : " << to_binary(ua16, true, sizeof(ua16) * 8) << std::setw(85) << (long long)(ua16) << '\n';
+	std::cout << "ua32  : " << to_binary(ua32, true, sizeof(ua32) * 8) << std::setw(65) << (long long)(ua32) << '\n';
+	std::cout << "ua64  : " << to_binary(ua64, true, sizeof(ua64) * 8) << std::setw(25) << (long long)(ua64) << '\n';
 
 	int8_t ia8   = int8_t(a);
 	int16_t ia16 = int16_t(a);
 	int32_t ia32 = int32_t(a);
 	int64_t ia64 = int64_t(a);
-	std::cout << "ia8   : " << to_binary(ia8, sizeof(ia8) * 8, true) << std::setw(95) << (long long)(ia8) << '\n';
-	std::cout << "ia16  : " << to_binary(ia16, sizeof(ia16) * 8, true) << std::setw(85) << (long long)(ia16) << '\n';
-	std::cout << "ia32  : " << to_binary(ia32, sizeof(ia32) * 8, true) << std::setw(65) << (long long)(ia32) << '\n';
-	std::cout << "ia64  : " << to_binary(ia64, sizeof(ia64) * 8, true) << std::setw(25) << (long long)(ia64) << '\n';
+	std::cout << "ia8   : " << to_binary(ia8, true, sizeof(ia8) * 8) << std::setw(95) << (long long)(ia8) << '\n';
+	std::cout << "ia16  : " << to_binary(ia16, true, sizeof(ia16) * 8) << std::setw(85) << (long long)(ia16) << '\n';
+	std::cout << "ia32  : " << to_binary(ia32, true, sizeof(ia32) * 8) << std::setw(65) << (long long)(ia32) << '\n';
+	std::cout << "ia64  : " << to_binary(ia64, true, sizeof(ia64) * 8) << std::setw(25) << (long long)(ia64) << '\n';
 
 	return nrOfFailedTests;
 }

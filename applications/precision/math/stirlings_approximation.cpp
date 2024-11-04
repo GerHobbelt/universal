@@ -1,8 +1,10 @@
 //  stirlings_approximation.cpp : Stirling's approximation for factorials
 //
-// Copyright (C) 2017-2023 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// SPDX-License-Identifier: MIT
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
+#include <universal/utility/directives.hpp>
 #include <iostream>
 #include <sstream>
 #include <cmath>
@@ -11,7 +13,7 @@
 #include <universal/native/ieee754.hpp>
 #include <universal/number/edecimal/edecimal.hpp> // the oracle number system to use
 #include <universal/number/posit/posit.hpp>
-#include <universal/functions/factorial.hpp>
+#include <universal/math/functions/factorial.hpp>
 
 #include <universal/utility/error.hpp>
 

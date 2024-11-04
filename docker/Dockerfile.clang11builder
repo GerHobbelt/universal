@@ -1,8 +1,8 @@
 #
 # Dockerfile to create the builder container for compiling and testing Universal
-# docker build --target clang11builder -t stillwater/universal:clang11builder -f Dockerfile.clang11builder .
+# docker build --target clang11builder -t stillwater/builders:clang11builder -f Dockerfile.clang11builder .
 # then push to docker hub
-# docker push stillwater/universal:clang11builder
+# docker push stillwater/builders:clang11builder
 
 # BUILDER stage
 FROM silkeh/clang:11 AS clang11builder
@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends -V \
     apt-utils \
     build-essential \
     curl \
+    vim \
+    gdb \
+    gdbserver \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

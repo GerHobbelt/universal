@@ -1,6 +1,7 @@
 // arithmetic.cpp: test suite runner for arithmetic on bfloat16s
 //
 // Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// SPDX-License-Identifier: MIT
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <universal/utility/directives.hpp>
@@ -61,7 +62,7 @@ try {
 
 #if REGRESSION_LEVEL_1
 
-	constexpr unsigned nrOfRandoms = 1000;
+	constexpr unsigned nrOfRandoms = 1000000;
 	std::stringstream adds;
 	adds << test_tag << " " << nrOfRandoms << " random adds";
 	std::string description = adds.str();

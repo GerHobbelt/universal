@@ -1,6 +1,7 @@
 // performance.cpp : performance benchmarking for native floating-point
 //
-// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// SPDX-License-Identifier: MIT
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <universal/utility/directives.hpp>
@@ -11,7 +12,7 @@
 
 #include <universal/native/ieee754.hpp>
 // is representable
-#include <universal/functions/isrepresentable.hpp>
+#include <universal/math/functions/isrepresentable.hpp>
 #include <universal/verification/test_status.hpp> // ReportTestResult
 #include <universal/benchmark/performance_runner.hpp>
 

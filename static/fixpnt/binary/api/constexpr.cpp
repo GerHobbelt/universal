@@ -13,7 +13,7 @@
 #define FIXPNT_THROW_ARITHMETIC_EXCEPTION 0
 #include <universal/number/fixpnt/fixpnt.hpp>
 #include <universal/verification/test_suite.hpp>
-#include <universal/math/math_constants.hpp>
+#include <universal/math/constants/double_constants.hpp>
 
 template<typename Fixpnt>
 int DecoratedConstructors() {
@@ -32,25 +32,23 @@ int DecoratedConstructors() {
 			std::cout << a << '\n';
 		}
 		// constexpr for float depends on C++20 support and bit_cast<>
-#if BIT_CAST_SUPPORT
 		{
-			CONSTEXPRESSION Fixpnt a(1.0f);  // float
+			BIT_CAST_CONSTEXPR Fixpnt a(1.0f);  // float
 			std::cout << a << '\n';
 		}
 		{
-			CONSTEXPRESSION Fixpnt a(1.0);   // double
+			BIT_CAST_CONSTEXPR Fixpnt a(1.0);   // double
 			std::cout << a << '\n';
 		}
 #if LONG_DOUBLE_SUPPORT
 		{
-			CONSTEXPRESSION Fixpnt a(1.0l);  // long double
+			#if defined(DEBUG_LONG_DOUBLE_CONSTEXPR)
+			Fixpnt a(1.0l);  // long double
 			std::cout << a << '\n';
+			#endif
 		}
 #endif // LONG_DOUBLE_SUPPORT
-#else
-		std::cout << "constexpr not supported yet by compiler\n";
 
-#endif // BIT_CAST_SUPPORT
 	}
 
 	return nrOfFailedTestCases;
@@ -73,25 +71,20 @@ int AssignmentOperators() {
 			std::cout << a << '\n';
 		}
 		// constexpr for float depends on C++20 support and bit_cast<>
-#if BIT_CAST_SUPPORT
 		{
-			CONSTEXPRESSION Fixpnt a = 1.0f;  // float
+			BIT_CAST_CONSTEXPR Fixpnt a = 1.0f;  // float
 			std::cout << a << '\n';
 		}
 		{
-			CONSTEXPRESSION Fixpnt a = 1.0;   // double
+			BIT_CAST_CONSTEXPR Fixpnt a = 1.0;   // double
 			std::cout << a << '\n';
 		}
 #if LONG_DOUBLE_SUPPORT
 		{
-			CONSTEXPRESSION Fixpnt a = 1.0l;  // long double
+			Fixpnt a = 1.0l;  // long double
 			std::cout << a << '\n';
 		}
 #endif // LONG_DOUBLE_SUPPORT
-#else
-		std::cout << "constexpr not supported yet by compiler\n";
-
-#endif // BIT_CAST_SUPPORT
 	}
 
 	return nrOfFailedTestCases;
@@ -115,7 +108,7 @@ int AssignmentOperators() {
 
 template<typename Fixpnt>
 void ConstexprFixpnt() {
-	CONSTEXPRESSION Fixpnt a(sw::universal::m_pi);
+	CONSTEXPRESSION Fixpnt a(sw::universal::d_pi);
 	std::cout << type_tag(a) << " : " << a << '\n';
 }
 
@@ -149,7 +142,7 @@ try {
 
 	constexpr size_t FIRST_COLUMN = 43;
 	std::cout << "constexpr pi approximations\n";
-	std::cout << std::setw(FIRST_COLUMN) << "type" << " : " << m_pi << '\n';
+	std::cout << std::setw(FIRST_COLUMN) << "type" << " : " << d_pi << '\n';
 	ConstexprFixpnt<fixpnt<8, 4>>();
 	ConstexprFixpnt<fixpnt<9, 6>>();
 	ConstexprFixpnt<fixpnt<16, 4>>();
@@ -158,7 +151,7 @@ try {
 	ConstexprFixpnt<fixpnt<32, 28>>();
 	auto oldPrecision = std::cout.precision();
 	std::cout << std::setprecision(30);
-	std::cout << std::setw(FIRST_COLUMN) << "double" << " : " << m_pi << '\n';
+	std::cout << std::setw(FIRST_COLUMN) << "double" << " : " << d_pi << '\n';
 	std::cout << std::setprecision(oldPrecision);
 
 #if REGRESSION_LEVEL_1

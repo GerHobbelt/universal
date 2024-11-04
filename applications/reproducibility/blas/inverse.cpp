@@ -1,12 +1,11 @@
 // inverse.cpp: example program comparing float vs posit using Gauss-Jordan algorithm
 //
 // Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// SPDX-License-Identifier: MIT
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <universal/utility/directives.hpp>
-
 #include <chrono>
-
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 // enable fast posits
@@ -14,7 +13,6 @@
 #include <universal/number/posit/posit.hpp>
 #include <universal/blas/blas.hpp>
 #include <universal/blas/generators.hpp>
-#include <universal/functions/isrepresentable.hpp>
 
 template<typename Matrix, typename Vector>
 void BenchmarkGaussJordan(const Matrix& A, Vector& x, const Vector& b) {
