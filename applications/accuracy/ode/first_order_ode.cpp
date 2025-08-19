@@ -4,7 +4,9 @@
 // SPDX-License-Identifier: MIT
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
+#endif
 #include <cmath>
 // Configure the posit library with arithmetic exceptions
 // enable posit arithmetic exceptions
