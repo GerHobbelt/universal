@@ -425,6 +425,7 @@ void TestArithmeticOperatorPerformance() {
 
 // conditional compilation
 #define MANUAL_TESTING 0
+#define STRESS_TESTING 0
 
 int main()
 {
@@ -437,6 +438,10 @@ int main()
 
 	return EXIT_SUCCESS;
 #else
+	printf("%s\n", tag);
+
+	int nrOfFailedTestCases = 0;
+	   
 	TestCopyPerformance();
 	TestDecodePerformance();
 #ifdef LATER
@@ -444,7 +449,8 @@ int main()
 #endif
 	TestArithmeticOperatorPerformance();
 
-	return EXIT_SUCCESS;
+	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+
 #endif // MANUAL_TESTING
 }
 

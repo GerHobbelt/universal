@@ -322,6 +322,7 @@ void TestArithmeticOperatorPerformance() {
 
 // conditional compilation
 #define MANUAL_TESTING 0
+#define STRESS_TESTING 0
 
 int main()
 try {
@@ -341,10 +342,14 @@ try {
 	PerformanceRunner("posit<16,5,uint16_t>    copy           ", CopyWorkload< sw::universal::posit<16, 5, uint16_t> >, NR_OPS);
 	PerformanceRunner("posit<16,5,uint32_t>    copy           ", CopyWorkload< sw::universal::posit<16, 5, uint32_t> >, NR_OPS);
 
+
 	std::cout << "done" << std::endl;
 
 	return EXIT_SUCCESS;
 #else
+	std::cout << tag << std::endl;
+
+	int nrOfFailedTestCases = 0;
 	   
 	TestCopyPerformance();
 	TestDecodePerformance();
@@ -353,7 +358,7 @@ try {
 #endif
 	TestArithmeticOperatorPerformance();
 
-	return EXIT_SUCCESS;
+	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 
 #endif // MANUAL_TESTING
 }
