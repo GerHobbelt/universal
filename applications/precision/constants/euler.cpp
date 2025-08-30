@@ -5,7 +5,9 @@
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <universal/utility/directives.hpp>
+#ifndef _USE_MATH_DEFINES 
 #define _USE_MATH_DEFINES // Essential for many compilers to include math constant
+#endif
 #ifdef _MSC_VER
 #include <math.h>
 #else
