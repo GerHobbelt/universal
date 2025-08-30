@@ -7,7 +7,7 @@
 #include <universal/utility/directives.hpp>
 #include <universal/number/bfloat/bfloat.hpp>
 #include <universal/verification/test_suite.hpp>
-//#include <universal/verification/bfloat_math_test_suite.hpp>
+#include <universal/verification/test_suite_mathlib.hpp>
 
 // generate specific test case that you can trace with the trace conditions in cfloat.h
 // for most bugs they are traceable with _trace_conversion and _trace_add
@@ -67,10 +67,10 @@ try {
 	uint8_t d = 2;
 	std::cout << "1024 ^ 2 = " << ipow(c, d) << '\n';
 	std::cout << "1M ^ 2   = " << ipow(ipow(c, d), d) << '\n';
+#endif // LATER
 
 	std::cout << "bfloat16 Power function validation\n";
-	//nrOfFailedTestCases += ReportTestResult(VerifyPowerFunction< cfloat<8, 2, uint8_t> >(reportTestCases), "cfloat<8,2>", "pow");
-#endif // LATER
+	nrOfFailedTestCases += ReportTestResult(VerifyPow< bfloat16 >(reportTestCases), "bfloat16", "pow");
 
 	ReportTestSuiteResults(test_suite, nrOfFailedTestCases);
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);

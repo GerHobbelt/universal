@@ -152,7 +152,7 @@ public:
 	explicit operator int()                         const noexcept { return int(float(*this)); }
 	explicit operator long()                        const noexcept { return long(float(*this)); }
 	explicit operator long long()                   const noexcept { return (long long)(float(*this)); }
-	explicit operator char()                        const noexcept { return (unsigned int)(float(*this)); }
+	explicit operator char()                        const noexcept { return (char)(float(*this)); }
 	explicit operator unsigned short()              const noexcept { return (unsigned short)(float(*this)); }
 	explicit operator unsigned int()                const noexcept { return (unsigned int)(float(*this)); }
 	explicit operator unsigned long()               const noexcept { return (unsigned long)(float(*this)); }
@@ -253,7 +253,7 @@ public:
 			_bits &= ~bit;
 		}
 	}
-	constexpr void setbits(unsigned short value) noexcept { _bits = value; }
+	constexpr void setbits(unsigned value) noexcept { _bits = (value & 0xFFFFu); }
 
 	constexpr bfloat16& minpos() noexcept { _bits = 0x0001u; return *this; }
 	constexpr bfloat16& maxpos() noexcept { _bits = 0x7F7Fu; return *this; }
@@ -352,20 +352,27 @@ public:
 	constexpr bool isodd()     const noexcept { return (_bits & 0x0001u); }
 	constexpr bool iseven()    const noexcept { return !isodd(); }
 	constexpr bool isinteger() const noexcept { return false; } // return (floor(*this) == *this) ? true : false; }
-	constexpr bool ispos()     const noexcept { return !(_bits & 0x8000u); }
+	constexpr bool ispos()     const noexcept { return !isneg(); }
 	constexpr bool isneg()     const noexcept { return (_bits & 0x8000u); }
+	/*
+	* IEEE 754-2008 specifies the encoding of NaN and Infinity in the following way:
+	 Sign | Exponent | Mantissa
+	----- | -------- | -------- -
+		x | 11111111 | 1000000   Quiet NaN(qNaN)
+		x | 11111111 | 0xxxxxx   Signaling NaN(sNaN)
+	*/
 	constexpr bool isnan(int NaNType = NAN_TYPE_EITHER)  const noexcept { 
-		bool negative = isneg();
-		bool isNaN    = (_bits & 0x7F80u) && (_bits & 0x007F);
-		bool isNegNaN = isNaN && negative;
-		bool isPosNaN = isNaN && !negative;	
-		return (NaNType == NAN_TYPE_EITHER ? (isNegNaN || isPosNaN) :
-			(NaNType == NAN_TYPE_SIGNALLING ? isNegNaN :
-				(NaNType == NAN_TYPE_QUIET ? isPosNaN : false)));
+		// bool negative = isneg(); is not used to determine NaN
+		bool isNaN    = ((_bits & 0x7F80u) == 0x7f80u) && ((_bits & 0x007Fu) != 0);
+		bool isQuietNaN = isNaN && (_bits & 0x0040u) && ((_bits & 0x003Fu) == 0);
+		bool isSignalNaN = isNaN && (_bits & 0x003Fu);	
+		return (NaNType == NAN_TYPE_EITHER ? isNaN :
+			(NaNType == NAN_TYPE_SIGNALLING ? isSignalNaN :
+				(NaNType == NAN_TYPE_QUIET ? isQuietNaN : false)));
 	}
 	constexpr bool isinf(int InfType = INF_TYPE_EITHER)  const noexcept { 
 		bool negative = isneg();
-		bool isInf    = (_bits & 0x7F80u);
+		bool isInf = ((_bits & 0x7F80u) == 0x7f80u) && ((_bits & 0x007fu) == 0u);  // all exponent bits set, no mantissa bits set
 		bool isNegInf = isInf && negative;
 		bool isPosInf = isInf && !negative;
 		return (InfType == INF_TYPE_EITHER ? (isNegInf || isPosInf) :
